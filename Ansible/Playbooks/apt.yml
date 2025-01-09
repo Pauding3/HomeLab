@@ -1,7 +1,18 @@
 - hosts: "*"
-  become: yes
+
   tasks:
+    - name: load sudo passwords
+      become: true
+      ansible.builtin.include_vars:
+        file: ../vaults/become.yml
+        name: sudo_passwords
+
+    - name: set sudo passwords
+      set_fact:
+        ansible_become_password: "{{ sudo_passwords.passwords[inventory_hostname] }}"
+
     - name: apt
+      become: true
       apt:
-        update_cache: yes
-        upgrade: 'yes'
+        update_cache: true
+        upgrade: 'dist'
